@@ -9,4 +9,5 @@
 ![image](https://user-images.githubusercontent.com/61386231/111884717-1135bc00-89cc-11eb-999b-039cd6ae85d9.png)
 
 Ми отримаємо приблизно таку відповідь:
+
 ![image](https://user-images.githubusercontent.com/61386231/111884743-34606b80-89cc-11eb-9e4d-b6693a56c5a7.png)
