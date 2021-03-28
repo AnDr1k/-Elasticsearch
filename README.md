@@ -6,7 +6,9 @@
 Дистрибутив ES доступний на сайті розробника. Після розпакування архіву потрібно запустити bin / elasticsearch.
 Після установки і запуску перевіримо працездатність:
 
-![image](https://user-images.githubusercontent.com/61386231/111884717-1135bc00-89cc-11eb-999b-039cd6ae85d9.png)
+export ES_URL=localhost:9200
+
+curl -X GET $ES_URL
 
 Ми отримаємо приблизно таку відповідь:
 
