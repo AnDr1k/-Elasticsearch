@@ -209,7 +209,7 @@ GET /blog/post/_search?pretty
 
 У ES є кілька стандартних аналізаторів. Наприклад, аналізатор english.
 
-Скористаємося api і подивимося, як аналізатори standard і russian перетворять рядок "Story about preparing for a couple":
+Скористаємося api і подивимося, як аналізатори standard і english перетворять рядок "Story about preparing for a couple":
 
 
 
