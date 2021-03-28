@@ -27,7 +27,7 @@ curl -X GET $ES_URL
 #/ Pretty вказує, що висновок повинен бути придатним для читання людиною.
 
 
--PUT /blog/post/1?pretty
+- PUT /blog/post/1?pretty
 
 {
   "title": "Доповідь з ІПЗ",
