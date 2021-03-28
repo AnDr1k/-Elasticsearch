@@ -16,10 +16,10 @@ http://localhost:9200
 
 Додамо пост в ES:
 
+```javascript
+// Додамо документ c id 1 типу post в індекс blog.
 
-#/ Додамо документ c id 1 типу post в індекс blog.
-
-#/ Pretty вказує, що висновок повинен бути придатним для читання людиною.
+// Pretty вказує, що висновок повинен бути придатним для читання людиною.
 
 
 PUT /blog/post/1?pretty
@@ -39,7 +39,7 @@ PUT /blog/post/1?pretty
   "published_at": "2021-03-15T20:44:42+00:00"
   
 }
-
+```
 
 Отримаємо таку відповідь серверу:
 
@@ -47,11 +47,11 @@ PUT /blog/post/1?pretty
 
 ES автоматично створив індекс blog і тип post. Можна провести умовну аналогію: індекс - це база даних, а тип - таблиця в цій БД. Кожен тип має свою схему - mapping, також як і реляційна таблиця. Mapping генерується автоматично при індексації документа:
 
-
-#/ Отримаємо mapping всіх типів індексу blog
+```javascript
+// Отримаємо mapping всіх типів індексу blog
 
 GET /blog/_mapping?pretty
-
+```
 відповідь серверу:
 
 ![image](https://user-images.githubusercontent.com/61386231/112749395-cbc84e80-8fca-11eb-941c-2aa2d0dea70f.png)
@@ -60,10 +60,13 @@ GET /blog/_mapping?pretty
 
 # Запити
 
-# Витяг документа по його id:
+## Витяг документа по його id:
 
-
+```javascript
 #/ Винесемо документ з id 1 типу post з індексу blog
+
+GET /blog/post/1?pretty
+```
 
 ![image](https://user-images.githubusercontent.com/61386231/112760110-8c1b5a00-8ffe-11eb-8756-e4c103657d62.png)
 
@@ -78,21 +81,25 @@ GET /blog/_mapping?pretty
 
 Якщо нам не потрібна додаткова інформація, можна отримати тільки вміст _source:
 
+```javascript
 GET /blog/post/1/_source?pretty
+```
 
 ![image](https://user-images.githubusercontent.com/61386231/112760161-be2cbc00-8ffe-11eb-834a-8f4ecc0eb878.png)
 
 Також можна вибрати тільки певні поля:
 
-#/ Винесемо тільки поле title
-
+```javascript
+// Винесемо тільки поле title
 
 GET /blog/post/1?_source=title&pretty
+```
 
 ![image](https://user-images.githubusercontent.com/61386231/112761471-27fb9480-9004-11eb-8a49-c1cf3803f1d2.png)
 
 Проіндексуємо ще кілька постів і виконаємо більш складні запити.
 
+```javascript
 PUT /blog/post/2
 
 {
@@ -131,12 +138,12 @@ PUT /blog/post/3
   "published_at": "2014-07-21T20:44:42+00:00"
 
 }
-
+```
 
 # Сортування
 
-
-#/ Знайдемо останній пост за датою публікації і винесемо поля title та published_at
+```javascript
+// Знайдемо останній пост за датою публікації і винесемо поля title та published_at
 
 GET /blog/post/_search?pretty
 
@@ -149,6 +156,7 @@ GET /blog/post/_search?pretty
   "sort": [{"published_at": "desc"}]
 
 }
+```
 
 Отримаємо:
 
@@ -166,8 +174,8 @@ GET /blog/post/_search?pretty
 
 Використовуємо match query для пошуку id документів, що містять задане слово:
 
-
-#/ source: false означає, що не потрібно витягувати _source знайдених документів
+```javascript
+// source: false означає, що не потрібно витягувати _source знайдених документів
 
 GET /blog/post/_search?pretty
 
@@ -186,6 +194,7 @@ GET /blog/post/_search?pretty
   }
 
 }
+```
 
 ![image](https://user-images.githubusercontent.com/61386231/112762552-de617880-9008-11eb-9b70-e62063e4a989.png)
 
