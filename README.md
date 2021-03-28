@@ -63,7 +63,7 @@ GET /blog/_mapping?pretty
 ## Витяг документа по його id:
 
 ```javascript
-#/ Винесемо документ з id 1 типу post з індексу blog
+// Винесемо документ з id 1 типу post з індексу blog
 
 GET /blog/post/1?pretty
 ```
