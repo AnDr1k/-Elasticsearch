@@ -23,7 +23,6 @@ http://localhost:9200
 
 
 PUT /blog/post/1?pretty
-
 {
   "title": "Доповідь з ІПЗ",
   
@@ -101,7 +100,6 @@ GET /blog/post/1?_source=title&pretty
 
 ```javascript
 PUT /blog/post/2
-
 {
 
   "title": "Підготовка прикладів",
@@ -122,7 +120,6 @@ PUT /blog/post/2
 
 
 PUT /blog/post/3
-
 {
 
   "title": "Як я нарешті знайшов приклади до доповіді",
@@ -146,7 +143,6 @@ PUT /blog/post/3
 // Знайдемо останній пост за датою публікації і винесемо поля title та published_at
 
 GET /blog/post/_search?pretty
-
 {
 
   "size": 1,
@@ -178,7 +174,6 @@ GET /blog/post/_search?pretty
 // source: false означає, що не потрібно витягувати _source знайдених документів
 
 GET /blog/post/_search?pretty
-
 {
 
   "_source": false,
