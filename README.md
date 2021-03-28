@@ -1,7 +1,10 @@
 # Використання клієнту Elasticsearch(.js)
+
 ```diff
-+ this text is highlighted in green
-- this text is highlighted in red
+- text in red
++ text in green
+! text in orange
+# text in gray
 ```
 
 # Установка ES
@@ -27,9 +30,9 @@ curl -X GET $ES_URL
 #/ Pretty вказує, що висновок повинен бути придатним для читання людиною.
 
 
-- PUT /blog/post/1?pretty
+PUT /blog/post/1?pretty
 
-{
++ {
   "title": "Доповідь з ІПЗ",
   
   "content": "<p>Історія про довгу підготовку доповіді<p>",
@@ -43,7 +46,7 @@ curl -X GET $ES_URL
   
   "published_at": "2021-03-15T20:44:42+00:00"
   
-}
+} +
 
 
 Отримаємо таку відповідь серверу:
