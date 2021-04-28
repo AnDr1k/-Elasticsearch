@@ -202,9 +202,108 @@ GET /blog/post/_search?pretty
 Аналізатори потрібні, щоб перетворити вихідний текст в набір токенів.
 Аналізатори складаються з одного Tokenizer і декількох необов'язкових TokenFilters. Tokenizer може передувати декільком CharFilters. Tokenizer розбивають вихідну рядок на токени, наприклад, по прогалин і символів пунктуації. TokenFilter може змінювати токени, видаляти або додавати нові, наприклад, залишати тільки основу слова, прибирати приводи, додавати синоніми. CharFilter - змінює вихідну рядок цілком, наприклад, вирізає html теги.
 
-У ES є кілька стандартних аналізаторів. Наприклад, аналізатор english.
+У ES є кілька стандартних аналізаторів. Наприклад, аналізатор russian.
 
-Скористаємося api і подивимося, як аналізатори standard і english перетворять рядок "Story about preparing for a couple":
+Скористаємося api і подивимося, як аналізатори standard і russian перетворять рядок "Веселые истории про котят":
+```javascript
+# Використовуємо аналізатор standard
+# Обов'язково потрібно перекодувати НЕ ASCII символи
+curl -XGET "$ ES_URL / _analyze? pretty & analyzer = standard & text =% D0% 92% D0% B5% D1% 81% D0% B5% D0% BB% D1% 8B% D0% B5% 20% D0% B8% D1% 81% D1% 82% D0% BE% D1% 80% D0% B8% D0% B8% 20% D0% BF% D1% 80% D0% BE% 20% D0% BA% D0% BE% D1% 82% D1% 8F% D1% 82 "
+```
 
+![image](https://user-images.githubusercontent.com/61386231/116445904-0f7ad600-a85f-11eb-8b2b-c67b1ca6f66b.png)
 
+```javascript
+# Використовуємо аналізатор russian
+curl -XGET "$ ES_URL / _analyze? pretty & analyzer = russian & text =% D0% 92% D0% B5% D1% 81% D0% B5% D0% BB% D1% 8B% D0% B5% 20% D0% B8% D1% 81% D1% 82% D0% BE% D1% 80% D0% B8% D0% B8% 20% D0% BF% D1% 80% D0% BE% 20% D0% BA% D0% BE% D1% 82% D1% 8F% D1% 82 "
+```
 
+![image](https://user-images.githubusercontent.com/61386231/116445990-2a4d4a80-a85f-11eb-80c6-fc6d1923e332.png)
+
+Стандартний аналізатор розбив рядок по прогалин і перевів все в нижній регістр, аналізатор russian - прибрати не значущі слова, перевів в нижній регістр і залишив основу слів.
+
+Подивимося, які Tokenizer, TokenFilters, CharFilters використовує аналізатор russian:
+
+![image](https://user-images.githubusercontent.com/61386231/116446051-40f3a180-a85f-11eb-9209-8ae886ab6763.png)
+
+Опишемо свій аналізатор на основі russian, який буде вирізати html теги. Назвемо його default, тому що аналізатор з таким ім'ям буде використовуватися за замовчуванням.
+
+![image](https://user-images.githubusercontent.com/61386231/116446133-536ddb00-a85f-11eb-92bf-d6e1bf098ae3.png)
+
+Спочатку з початкового рядка втечуть всі html теги, потім її розіб'є на токени tokenizer standard, отримані токени перейдуть в нижній регістр, втечуть незначущі слова і від решти токенов залишиться основа слова.
+
+# Створення індексу
+
+Вище ми описали default аналізатор. Він буде застосовуватися до всіх строкових полях. Наш пост містить масив тегів, відповідно, теги теж будуть оброблені аналізатором. Оскільки ми шукаємо пости по точній відповідності тегу, то необхідно відключити аналіз для поля tags.
+
+Створимо індекс blog2 з аналізатором і маппінгом, в якому відключено аналіз поля tags:
+
+![image](https://user-images.githubusercontent.com/61386231/116446397-9a5bd080-a85f-11eb-92fb-5e56d9e5f74b.png)
+
+Додамо ті ж 3 поста в цей індекс (blog2). Я опущу цей процес, тому що він аналогічний додаванню документів в індекс blog.
+
+# Повнотекстовий пошук з підтримкою виразів
+
+Познайомимося з ще одним типом запитів:
+
+```javascript
+# Знайдемо документи, в яких зустрічається слово 'історії'
+# Query -> simple_query_string -> query містить пошуковий запит
+# Поле title має пріоритет 3
+# Поле tags має пріоритет 2
+# Поле content має пріоритет 1
+# Пріоритет використовується при ранжируванні результатів
+curl -XPOST "$ ES_URL / blog2 / post / _search? pretty" -d '
+{
+   "Query": {
+     "Simple_query_string": {
+       "Query": "історії",
+       "Fields": [
+         "Title ^ 3",
+         "Tags ^ 2",
+         "Content"
+       ]
+     }
+   }
+}
+```
+
+Оскільки ми використовуємо аналізатор з російським стемінгом, то цей запит поверне всі документи, хоча в них зустрічається тільки слово 'історія'.
+
+Запит може містити спеціальні символи, наприклад:
+
+```javascript
+"\"fried eggs\" +(eggplant | potato) -frittata"
+```
+
+Синтаксис запиту:
+
+```javascript
++ signifies AND operation
+| signifies OR operation
+- negates a single token
+" wraps a number of tokens to signify a phrase for searching
+* at the end of a term signifies a prefix query
+( and ) signify precedence
+~N after a word signifies edit distance (fuzziness)
+~N after a phrase signifies slop amount
+```
+
+```javascript
+# Знайдемо документи без слова 'цуценята'
+curl -XPOST "$ ES_URL / blog2 / post / _search? pretty" -d '
+{
+   "Query": {
+     "Simple_query_string": {
+       "Query": "-щенкі",
+       "Fields": [
+         "Title ^ 3",
+         "Tags ^ 2",
+         "Content"
+       ]
+     }
+   }
+} '
+
+# Отримаємо 2 пости про котиків
+```
